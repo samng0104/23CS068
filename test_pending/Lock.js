@@ -1,46 +1,43 @@
-const { ethers } = require('hardhat');
-const { expect } = require('chai');
+const {expect} = require("chai");
+const {ethers} = require("hardhat");
 
-describe("Lock Contract", function () {
-  let lock;
-  let owner, addr1;
-  let addr1Balance;
+describe("Lock contract", function () {
+    let Lock, lock, owner, addr1;
+    const unlockTime = Math.floor(Date.now() / 1000) + 30; // 30 seconds from the current time
 
-  before(async () => {
-    const [deployer, account1] = await ethers.getSigners();
-    owner = deployer;
-    addr1 = account1;
-    addr1Balance = await addr1.getBalance();
+    beforeEach(async function () {
+        Lock = await ethers.getContractFactory("Lock");
+        [owner, addr1] = await ethers.getSigners();
+        lock = await Lock.deploy(unlockTime, {value: ethers.utils.parseEther("1")});
+    });
 
-    const Lock = await ethers.getContractFactory("Lock");
-    lock = await Lock.deploy(addr1Balance.add(ethers.utils.parseEther('1')));
-  });
+    describe("Constructor", function () {
 
-  it("The owner should be set correctly", async () => {
-    expect(await lock.owner()).to.equal(owner.address);
-  });
+        it("Should set correct owner", async function () {
+            expect(await lock.owner()).to.equal(owner.address);
+        });
 
-  it("The unlockTime should be set correctly", async () => {
-    expect(await lock.unlockTime()).to.equal(addr1Balance.add(ethers.utils.parseEther('1')));
-  });
+        it("Should set correct unlock time", async function () {
+            expect(await lock.unlockTime()).to.equal(unlockTime);
+        });
+    });
 
-  it("Attempt to withdraw before time should fail", async () => {
-    await expect(lock.connect(owner).withdraw())
-           .to.be.revertedWith("You can't withdraw yet");
-  });
+    describe("withdraw function", function () {
 
-  it("Attempt to withdraw by non-owner should fail", async () => {
-    const currentBlockTime = (await ethers.provider.getBlock('latest')).timestamp;
-    // Fast-forward to after unlockTime
-    await ethers.provider.send("evm_increaseTime", [currentBlockTime + 86400]);
-    await ethers.provider.send("evm_mine");
-    await expect(lock.connect(addr1).withdraw())
-           .to.be.revertedWith("You aren't the owner");
-  });
+        it("Should only allow owner to withdraw", async function () {
+            await ethers.provider.send("evm_increaseTime", [31]); // Increase time to unlock
+            await expect(lock.connect(addr1).withdraw()).to.be.revertedWith("You aren't the owner");
+        });
 
-  it("Owner should be able to withdraw after unlockTime", async () => {
-    const ownerBalanceBefore = await owner.getBalance();
-    await expect(() => lock.connect(owner).withdraw())
-           .to.changeEtherBalance(lock, -ownerBalanceBefore);
-  });
+        it("Should not allow to withdraw before unlock time", async function () {
+            await expect(lock.withdraw()).to.be.revertedWith("You can't withdraw yet");
+        });
+
+        it("Should allow to withdraw after unlock time and emit correct event", async function () {
+            await ethers.provider.send("evm_increaseTime", [31]); // Increase time to unlock
+            await expect(lock.withdraw())
+                .to.emit(lock, 'Withdrawal')
+                .withArgs(ethers.utils.parseEther("1"), await ethers.provider.getBlockNumber());
+            });
+    });
 });

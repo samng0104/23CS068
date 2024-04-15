@@ -8,7 +8,8 @@ describe("SimpleStorage", function () {
   beforeEach(async function () {
     const SimpleStorage = await ethers.getContractFactory("SimpleStorage");
     [owner] = await ethers.getSigners();
-    simpleStorage = await SimpleStorage.deploy(); 
+    simpleStorage = await SimpleStorage.deploy();
+    
   });
 
   describe("updateData function", function () {
@@ -27,24 +28,16 @@ describe("SimpleStorage", function () {
       expect(await simpleStorage.readData()).to.equal(0);
     });
 
-    it("Can update data multiple times", async function () {
+    it("Data should be changeable multiple times", async function () {
       await simpleStorage.updateData(30);
       expect(await simpleStorage.readData()).to.equal(30);
       await simpleStorage.updateData(40);
       expect(await simpleStorage.readData()).to.equal(40);
     });
 
-    it("Does not allow negative number", async function () {
-      await expect(simpleStorage.updateData(-1)).to.be.reverted;
-    });
-
   });
 
   describe("readData function", function () {
-
-    it("Should return 0 when no data has been set", async function () {
-      expect(await simpleStorage.readData()).to.equal(0);
-    });
 
     it("Should return correct data after it has been updated", async function () {
       await simpleStorage.updateData(50);

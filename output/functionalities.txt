@@ -1,57 +1,77 @@
-In the contract, there are two functionalities:
+In the given contract, the functionalities are:
 
-1. `updateData` function: This function updates the data state variable. Priority: High
-2. `readData` function: This function reads the data state variable. Priority: Low. 
+1. balanceOf - Returns the account balance of another account with address _owner
+2. transfer - Transfer _value amount of tokens to address _to, and returns a success boolean
+3. transferFrom - Transfer _value amount of tokens from address _from to address _to, and returns a success boolean
+4. approve - Allows _spender to withdraw from your account, multiple times, up to the _value amount. If this function is called again it overwrites the current allowance with _value, and returns a success boolean
+5. allowance - Returns the amount which _spender is still allowed to withdraw from _owner
 
-You provided an example to be referenced when creating test cases for Lock contract. Below are the test cases for SimpleStorage contract, and note that we are using ethers.js and Mocha testing framework in conjunction with Hardhat:
+The most crucial ones are transfer, transferFrom, and approve because these deal directly with the transaction process. balanceOf and allowance are also important, as they provide system checks.
+
+Here's the test javascript snippet for the contract. Note: Replace `<TOKEN_ADDRESS>` and `<ADDRESS>` with actual addresses.
 
 ```javascript
 const { expect } = require("chai");
 
-describe("Simple Storage", function() {
-  let simpleStorage;
+describe("EIP20Interface", function () {
+  let token;
   let owner;
+  let addr1;
+  let addr2;
 
-  beforeEach(async function() {
-    const SimpleStorage = await ethers.getContractFactory("SimpleStorage");
-    [owner] = await ethers.getSigners();
-    simpleStorage = await SimpleStorage.deploy();
+  beforeEach(async function () {
+    const EY = await ethers.getContractFactory("EY");
+    [owner, addr1, addr2, _] = await ethers.getSigners();
+    token = await EY.deploy("100", "A_Token", "8", "ATK");
   });
 
-  describe("updateData", function() {
-    it("should update data state variable correctly", async function() {
-      await simpleStorage.updateData(10);
-      expect(await simpleStorage.readData()).to.equal(10);
-    });
-
-    it("should store the latest value", async function() {
-      await simpleStorage.updateData(20);
-      expect(await simpleStorage.readData()).to.equal(20);
-    });
-
-    it("should update value even if the new number is 0", async function() {
-      await simpleStorage.updateData(0);
-      expect(await simpleStorage.readData()).to.equal(0);
-    });
-
-    it("should update value even if the value is the same as the last one", async function() {
-      await simpleStorage.updateData(20);
-      await simpleStorage.updateData(20);
-      expect(await simpleStorage.readData()).to.equal(20);
+  describe("BalanceOf function", function () {
+    it("Should return the initial balance of owner", async function () {
+      expect(await token.balanceOf(owner.address)).to.equal(100);
     });
   });
 
-  describe("readData", function() {
-    it("should return the correct data", async function() {
-      await simpleStorage.updateData(10);
-      expect(await simpleStorage.readData()).to.equal(10);
+  describe("transfer function", function () {
+    it("Should transfer the tokens correctly", async function () {
+      await token.transfer(addr1.address, 50);
+      expect(await token.balanceOf(addr1.address)).to.equal(50);
     });
 
-    it("should return 0 if data is not set", async function() {
-      expect(await simpleStorage.readData()).to.equal(0);
+    it("Should fail when sender does not have enough balance", async function () {
+      await expect(token.transfer(addr1.address, 101)).to.be.revertedWith(
+        "Not enough balance"
+      );
+    });
+  });
+
+  describe("TransferFrom function", function () {
+    it("Should transfer the tokens from addr1 to addr2", async function () {
+      await token.transfer(addr1.address, 50);
+      await token.approve(addr2.address, 50);
+      await token.transferFrom(addr1.address, addr2.address, 50);
+      expect(await token.balanceOf(addr2.address)).to.equal(50);
+    });
+
+    it("Should fail when sender does not have enough balance", async function () {
+      await expect(
+        token.transferFrom(addr1.address, addr2.address, 101)
+      ).to.be.revertedWith("Not enough balance");
+    });
+  });
+
+  describe("approve function", function () {
+    it("Should set the allowance correctly", async function () {
+      await token.approve(addr1.address, 50);
+      expect(await token.allowance(owner.address, addr1.address)).to.equal(50);
+    });
+  });
+
+  describe("allowance function", function () {
+    it("Should return the correct allowance", async function () {
+      await token.approve(addr1.address, 50);
+      expect(await token.allowance(owner.address, addr1.address)).to.equal(50);
     });
   });
 });
 ```
-This example is assuming the smart contract has been already deployed. These test cases cover different scenarios to ensure the smart contract's functions (`updateData` and `readData`) work as expected.
-2024-04-11 07:22:43
+This test suite will make sure the basic functionalities of the contract work as expected. Don't forget to run `npx hardhat test` to execute the test cases.

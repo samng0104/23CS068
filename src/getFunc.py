@@ -44,7 +44,7 @@ response = client.chat.completions.create(model=deployment_name, messages=[
                     subject_contract + "For those functionalities, \
                     can you rank them by their importance in the contract? \
                     For more important function, please give a higher number of test cases. \
-                    For example, the most important function should have at least 4 test cases.\
+                    For example, the most important function should have at least 3 test cases.\
                     Please provide those test cases code snippet in one single JavaScript snippet. \
                     There are some important things you should not do in the test cases. \
                     First, please do not leave any \"...\" in the code. \
@@ -53,7 +53,7 @@ response = client.chat.completions.create(model=deployment_name, messages=[
                     I would like to test cases are ready to run. \
                     You can generate test cases referencing this example test case." + sample_test_case +
                     "Be reminded that ```await .deployed()``` will cause TypeError in Hardhat. \
-                    Therefore you should not add that line of code .\
+                    Therefore you should not use `.delpoyed()` in the test cases. \
                     The usage of a testing framework is Hardhat."
     }
 ])
@@ -65,4 +65,4 @@ output_file_path = './output/functionalities.txt'
 with open(output_file_path, 'w') as file:
     file.write('\n'.join(conversation_history))
     # Write date and time
-    file.write(datetime.now().strftime("\n%Y-%m-%d %H:%M:%S"))
+    # file.write(datetime.now().strftime("\n%Y-%m-%d %H:%M:%S"))

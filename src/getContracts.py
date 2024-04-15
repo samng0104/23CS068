@@ -1,4 +1,3 @@
-import pandas as pd
 from datasets import load_dataset
 
 dataset = load_dataset('mwritescode/slither-audited-smart-contracts', 'all-plain-text', trust_remote_code=True)
@@ -6,10 +5,14 @@ dataset = load_dataset('mwritescode/slither-audited-smart-contracts', 'all-plain
 train_data = dataset['train']
 
 source_code = train_data['source_code']
+slither = train_data['slither']
 
-test_contract = source_code[22]
+data = 44
+
+test_contract = source_code[data]
+error = slither[data]
 
 output_file = './contracts/' + 'test_contract' + '.sol'
-
+print(error)
 with open(output_file, 'w', newline='') as file:
     file.write(test_contract)
