@@ -57,8 +57,8 @@ response = client.chat.completions.create(model=deployment_name, messages=[
                     The usage of a testing framework is Hardhat."
     }
 ])
-conversation_history.append(response.choices[0].message.content)
 
+conversation_history.append(response.choices[0].message.content)
 
 output_file_path = './output/functionalities.txt'
 

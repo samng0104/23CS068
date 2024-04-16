@@ -6,7 +6,7 @@ Version
 Instrumenting for coverage...
 =============================
 
-> EY.sol
+> SimpleStorage.sol
 
 Compilation:
 ============
@@ -20,58 +20,25 @@ Network Info
 
 
 
-  EIP20Interface
-    BalanceOf function
-      ✔ Should return the initial balance of owner
-    transfer function
-      ✔ Should transfer the tokens correctly
-      1) Should fail when sender does not have enough balance
-    TransferFrom function
-      2) Should transfer the tokens from addr1 to addr2
-      3) Should fail when sender does not have enough balance
-    approve function
-      ✔ Should set the allowance correctly
-    allowance function
-      ✔ Should return the correct allowance
+  SimpleStorage
+    updateData function
+      ✔ Should set data correctly
+      ✔ Should update data correctly
+      ✔ Data should remain the same if not updated
+      ✔ Data can be changeable multiple times
+    readData function
+      ✔ Should return correct data after it has been updated
 
 
-  4 passing (265ms)
-  3 failing
+  5 passing (201ms)
 
-  1) EIP20Interface
-       transfer function
-         Should fail when sender does not have enough balance:
-     AssertionError: Expected transaction to be reverted with reason 'Not enough balance', but it reverted without a reason
-      at Context.<anonymous> (test/EY.js:28:7)
-
-  2) EIP20Interface
-       TransferFrom function
-         Should transfer the tokens from addr1 to addr2:
-     Error: Transaction reverted without a reason string
-    at <UnrecognizedContract>.<unknown> (0x5fc8d32690cc91d4c39d9d3abcbd16989f875707)
-    at EdrProviderWrapper.request (node_modules/hardhat/src/internal/hardhat-network/provider/provider.ts:415:41)
-    at HardhatEthersSigner.sendTransaction (node_modules/@nomicfoundation/hardhat-ethers/src/signers.ts:125:18)
-    at send (node_modules/ethers/src.ts/contract/contract.ts:313:20)
-    at Proxy.transferFrom (node_modules/ethers/src.ts/contract/contract.ts:352:16)
-    at Context.<anonymous> (test/EY.js:38:7)
-  
-
-  3) EIP20Interface
-       TransferFrom function
-         Should fail when sender does not have enough balance:
-     AssertionError: Expected transaction to be reverted with reason 'Not enough balance', but it reverted without a reason
-      at Context.<anonymous> (test/EY.js:43:7)
-
-
-
-------------|----------|----------|----------|----------|----------------|
-File        |  % Stmts | % Branch |  % Funcs |  % Lines |Uncovered Lines |
-------------|----------|----------|----------|----------|----------------|
- contracts/ |        0 |        0 |        0 |        0 |                |
-  EY.sol    |        0 |        0 |        0 |        0 |... 198,200,207 |
-------------|----------|----------|----------|----------|----------------|
-All files   |        0 |        0 |        0 |        0 |                |
-------------|----------|----------|----------|----------|----------------|
+--------------------|----------|----------|----------|----------|----------------|
+File                |  % Stmts | % Branch |  % Funcs |  % Lines |Uncovered Lines |
+--------------------|----------|----------|----------|----------|----------------|
+ contracts/         |      100 |      100 |      100 |      100 |                |
+  SimpleStorage.sol |      100 |      100 |      100 |      100 |                |
+--------------------|----------|----------|----------|----------|----------------|
+All files           |      100 |      100 |      100 |      100 |                |
+--------------------|----------|----------|----------|----------|----------------|
 
 > Istanbul reports written to ./coverage/ and ./coverage.json
-

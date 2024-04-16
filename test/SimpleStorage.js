@@ -1,14 +1,3 @@
-The contract `SimpleStorage` has two core functionalities: 
-
-1. `updateData(uint _data)`: This is the function for updating the stored data in the contract. It's critical as it's the only way to change the state (data variable) of the smart contract.
-
-2. `readData()`: This function reads the current stored data. It's also important as it's the sole way to retrieve the stored data.
-
-The `updateData` function has the highest priority because it changes the state of the smart contract, while `readData` is state-independent, hence lower in priority. As per your request, more tests are generated for `updateData` function.
-
-Here's the Javascript implementation for the described test cases using Hardhat and chai.
-
-```javascript
 const { expect } = require("chai");
 
 describe("SimpleStorage", function () {
@@ -61,4 +50,3 @@ describe("SimpleStorage", function () {
 
   });
 });
-```
